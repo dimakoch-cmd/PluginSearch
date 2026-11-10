@@ -1,9 +1,13 @@
 import * as vscode from 'vscode';
+import { findMatches, resolveBinaryPath } from './searchRunner';
 
 interface SearchRequest {
     filePath: string;
     query: string;
 }
+
+let extensionPath = '';
+const output = vscode.window.createOutputChannel('Plugin Search');
 
 // Запрашивает поисковое слово. Пустой ввод не принимается.
 async function askQuery(initialValue?: string): Promise<string | undefined> {
@@ -71,15 +75,35 @@ async function searchInActiveFile(): Promise<void> {
     await runSearch({ filePath: document.uri.fsPath, query });
 }
 
-// Заглушка: в подзадаче 4 здесь будет вызов C++ бинарника
+// Запускает бинарник и показывает результаты
 async function runSearch(request: SearchRequest): Promise<void> {
-    vscode.window.showInformationMessage(
-        `Поиск "${request.query}" в файле ${request.filePath}`
-    );
+    try {
+        const binary = resolveBinaryPath(extensionPath);
+        const matches = await findMatches(binary, request.filePath, request.query);
+
+        // Временный вывод для проверки, навигацию добавим в подзадаче 5
+        output.clear();
+        output.appendLine(`Запрос: "${request.query}", файл: ${request.filePath}`);
+
+        // Префиксы "строка:колонка" выравниваются по ширине самого длинного
+        const prefixes = matches.map((m) => `${m.line}:${m.column + 1}`);
+        const width = prefixes.reduce((max, p) => Math.max(max, p.length), 0);
+        matches.forEach((m, i) => {
+            output.appendLine(`${prefixes[i].padEnd(width)}  ${m.text}`);
+        });
+        output.show(true);
+
+        vscode.window.showInformationMessage(`Найдено совпадений: ${matches.length}`);
+    } catch (err) {
+        vscode.window.showErrorMessage(err instanceof Error ? err.message : String(err));
+    }
 }
 
 export function activate(context: vscode.ExtensionContext): void {
+    extensionPath = context.extensionPath;
+
     context.subscriptions.push(
+        output,
         vscode.commands.registerCommand('pluginSearch.searchInFile', searchInFile),
         vscode.commands.registerCommand('pluginSearch.searchInActiveFile', searchInActiveFile)
     );

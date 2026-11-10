@@ -4,8 +4,12 @@
   "description": "Поиск строки со словом в файле через C++ приложение search",
   "version": "0.0.1",
   "publisher": "local",
-  "engines": { "vscode": "^1.85.0" },
-  "categories": ["Other"],
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
@@ -18,7 +22,17 @@
         "command": "pluginSearch.searchInActiveFile",
         "title": "Plugin Search: Поиск в активном файле"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Plugin Search",
+      "properties": {
+        "pluginSearch.binaryPath": {
+          "type": "string",
+          "default": "",
+          "description": "Путь к бинарнику search. Если пусто, используется встроенный или собранный в bin/build."
+        }
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile",
