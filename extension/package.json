@@ -1,0 +1,33 @@
+{
+  "name": "plugin-search",
+  "displayName": "Plugin Search",
+  "description": "Поиск строки со словом в файле через C++ приложение search",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": { "vscode": "^1.85.0" },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "pluginSearch.searchInFile",
+        "title": "Plugin Search: Поиск в выбранном файле"
+      },
+      {
+        "command": "pluginSearch.searchInActiveFile",
+        "title": "Plugin Search: Поиск в активном файле"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^18.19.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0"
+  }
+}
