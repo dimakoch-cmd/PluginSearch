@@ -21,6 +21,10 @@
       {
         "command": "pluginSearch.searchInActiveFile",
         "title": "Plugin Search: Поиск в активном файле"
+      },
+      {
+        "command": "pluginSearch.selectModes",
+        "title": "Plugin Search: Режимы поиска"
       }
     ],
     "configuration": {
@@ -30,6 +34,16 @@
           "type": "string",
           "default": "",
           "description": "Путь к бинарнику search. Если пусто, используется встроенный или собранный в bin/build."
+        },
+        "pluginSearch.caseSensitive": {
+          "type": "boolean",
+          "default": true,
+          "description": "Учитывать регистр. Удобнее менять командой «Plugin Search: Режимы поиска». Без учёта регистра работают латиница и кириллица."
+        },
+        "pluginSearch.wholeWord": {
+          "type": "boolean",
+          "default": false,
+          "description": "Искать только целые слова. Удобнее менять командой «Plugin Search: Режимы поиска»."
         }
       }
     }

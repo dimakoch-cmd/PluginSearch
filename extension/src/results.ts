@@ -5,11 +5,10 @@ interface MatchItem extends vscode.QuickPickItem {
     match: SearchMatch;
 }
 
-// Открывает файл, ставит курсор на найденное слово и выделяет его
+// Открывает файл, ставит курсор на найденное совпадение и выделяет его
 async function goToMatch(
     uri: vscode.Uri,
     match: SearchMatch,
-    query: string,
     preserveFocus: boolean
 ): Promise<void> {
     const document = await vscode.workspace.openTextDocument(uri);
@@ -18,8 +17,8 @@ async function goToMatch(
         preserveFocus
     });
 
-    const start = new vscode.Position(match.line - 1, Math.max(match.column, 0));
-    const range = new vscode.Range(start, start.translate(0, query.length));
+    const start = new vscode.Position(match.line - 1, match.column);
+    const range = new vscode.Range(start, start.translate(0, match.length));
 
     editor.selection = new vscode.Selection(range.start, range.end);
     editor.revealRange(range, vscode.TextEditorRevealType.InCenterIfOutsideViewport);
@@ -32,12 +31,12 @@ export async function presentMatches(
     matches: SearchMatch[]
 ): Promise<void> {
     if (matches.length === 0) {
-        vscode.window.showInformationMessage(`Слово "${query}" не найдено.`);
+        vscode.window.showInformationMessage(`Совпадений для "${query}" не найдено.`);
         return;
     }
 
     if (matches.length === 1) {
-        await goToMatch(uri, matches[0], query, false);
+        await goToMatch(uri, matches[0], false);
         return;
     }
 
@@ -66,7 +65,7 @@ export async function presentMatches(
     // Предпросмотр: при движении по списку редактор следует за выбором
     picker.onDidChangeActive((active) => {
         if (active.length > 0) {
-            goToMatch(uri, active[0].match, query, true).catch(() => undefined);
+            goToMatch(uri, active[0].match, true).catch(() => undefined);
         }
     });
 
@@ -77,7 +76,7 @@ export async function presentMatches(
         }
         accepted = true;
         picker.hide();
-        goToMatch(uri, item.match, query, false).catch((err) => {
+        goToMatch(uri, item.match, false).catch((err) => {
             vscode.window.showErrorMessage(err instanceof Error ? err.message : String(err));
         });
     });
