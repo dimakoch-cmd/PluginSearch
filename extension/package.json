@@ -4,6 +4,7 @@
   "description": "Поиск строки со словом в файле через C++ приложение search",
   "version": "0.0.1",
   "publisher": "local",
+  "license": "UNLICENSED",
   "engines": {
     "vscode": "^1.85.0"
   },
@@ -51,11 +52,14 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "build:binary": "bash scripts/build-binary.sh",
+    "package": "npm run build:binary && mkdir -p ../dist && vsce package --out ../dist/plugin-search.vsix --allow-missing-repository --skip-license"
   },
   "devDependencies": {
     "@types/node": "^18.19.0",
     "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.32.0",
     "typescript": "^5.3.0"
   }
 }

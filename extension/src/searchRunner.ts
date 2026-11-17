@@ -17,6 +17,19 @@ export interface SearchMatch {
 
 export class SearchError extends Error {}
 
+// После установки из .vsix бит исполняемости мог потеряться: пробуем вернуть его
+function ensureExecutable(binaryPath: string): void {
+    try {
+        fs.accessSync(binaryPath, fs.constants.X_OK);
+    } catch {
+        try {
+            fs.chmodSync(binaryPath, 0o755);
+        } catch {
+            // не вышло: понятную ошибку покажет запуск (EACCES)
+        }
+    }
+}
+
 // Ищет бинарник: настройка, затем папка расширения, затем сборка C++ проекта
 export function resolveBinaryPath(extensionPath: string): string {
     const configured = vscode.workspace
@@ -40,6 +53,7 @@ export function resolveBinaryPath(extensionPath: string): string {
             'Бинарник search не найден. Соберите C++ проект или задайте pluginSearch.binaryPath.'
         );
     }
+    ensureExecutable(found);
     return found;
 }
 
